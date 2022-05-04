@@ -1,0 +1,18 @@
+{
+  "name": "personaldiary",
+  "version": "1.0.0",
+  "description": "Personal Daily Diary",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tejas Parse",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.7",
+    "express": "^4.18.1",
+    "moment": "^2.29.3",
+    "mongoose": "^6.3.1",
+    "nodemon": "^2.0.16"
+  }
+}

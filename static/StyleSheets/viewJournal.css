@@ -1,0 +1,13 @@
+body {
+    background: rgb(52,200,229);
+    background: linear-gradient(306deg, rgba(52,200,229,1) 0%, rgb(84, 155, 235) 100%);
+}
+
+#cardHeader {
+    background-color: rgb(240, 240, 240);
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}

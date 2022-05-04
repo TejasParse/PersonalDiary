@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Journals</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="StyleSheets/viewJournal.css">
+    <link rel="icon" type="image/x-icon" href="Images/logo.png">
+
+</head>
+
+<body>
+
+    <header>
+        <%- include("partials/navbar") %>
+    </header>
+
+    <div class="container rounded mt-3">
+
+        <h1 class="text-white mb-2">Your Journals</h1>
+        <hr size="8" class="bg-white rounded mt-1">
+        <form action="/" method="get">
+            <div class="row mb-3">
+                <div class="col-3">
+                    <select class="form-select" aria-label="Default select example" name="day" it="day">
+                        <option value="" selected>All Days</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                        <option value="21">21</option>
+                        <option value="22">22</option>
+                        <option value="23">23</option>
+                        <option value="24">24</option>
+                        <option value="25">25</option>
+                        <option value="26">26</option>
+                        <option value="27">27</option>
+                        <option value="28">28</option>
+                        <option value="29">29</option>
+                        <option value="30">30</option>
+                        <option value="31">31</option>
+                    </select>
+
+                </div>
+                <div class="col-3">
+                    <select name="month" id="month" class="form-select" aria-label="Default select example">
+                        <option value="" selected>All Months</option>
+                        <option value="0">January</option>
+                        <option value="1">February</option>
+                        <option value="2">March</option>
+                        <option value="3">April</option>
+                        <option value="4">May</option>
+                        <option value="5">June</option>
+                        <option value="6">July</option>
+                        <option value="7">August</option>
+                        <option value="8">September</option>
+                        <option value="9">October</option>
+                        <option value="10">November</option>
+                        <option value="11">December</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <input type="number" name="year" id="year" class="form-control" placeholder="All Years">
+                </div>
+                <div class="col-3">
+                    <a href="#"><button class="btn btn-primary">Filter!</button></a>
+                </div>
+            </div>
+        </form>
+
+        <% for( let index=0; index < EntryData.length; index++ ) { %>
+
+                <div class="container-fluid bg-white rounded mb-3 ps-0 pe-0">
+
+                    <div class="container-fluid bg-grey p-2 rounded-top" id="cardHeader">
+                        <h2 class="mb-1">
+                            <%= EntryData[index].title %>
+                        </h2>
+                        <p class="fst-italic mt-0 mb-2">
+                            <%= EntryData[index].date.toDateString() %>
+                        </p>
+                    </div>
+                    <div id="cardBody" class="containder-fluid bg-white p-2 rounded-bottom">
+                        <p><%= EntryData[index].description.substring(0,520) + "..." %></p>
+                        <a href="/displayJournal?id=<%= EntryData[index]._id %>"><button class="btn-primary btn">Read More</button></a>
+                    </div>
+                </div>
+           
+        <% } %>
+
+        <% if (EntryData.length==0) { %>
+            <h3 class="text-white">No Results Found!</h3>
+        <% } %>
+
+    </div>
+
+    <script src="JavaScripts/viewJournal.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
