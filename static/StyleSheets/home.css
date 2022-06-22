@@ -1,0 +1,12 @@
+body {
+    background-color: rgb(227, 242, 255);
+}
+
+h1 {
+    font-size: 4.5rem;
+}
+
+p {
+    font-size: 2rem;
+    text-align: center;
+}

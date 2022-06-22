@@ -25,6 +25,10 @@ const EntrySchema = new mongoose.Schema({
     year: {
         type: String,
         required: true
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 });
 
