@@ -8,7 +8,6 @@ const EntrySchema = new mongoose.Schema({
     date: {
         type: Date,
         required: true,
-        unique: true
     },
     description: {
         type: String,
@@ -32,7 +31,6 @@ const EntrySchema = new mongoose.Schema({
     }
 });
 
+
 const Entry = new mongoose.model("Entry",EntrySchema);
-
-
 module.exports.Entry = Entry;

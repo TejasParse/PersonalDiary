@@ -10,7 +10,6 @@ const database = require("./db/database");
 const bcrypt = require('bcrypt');
 const session = require("express-session");
 const flash = require('connect-flash');
-const { userInfo } = require("os");
 
 const PORT = 3000;
 
@@ -47,8 +46,6 @@ app.use((req,res,next)=>{
 
 const verfyLogin = async (req,res,next)=>{
 
-    console.log(req.body);
-
     const user = await User.findOne({
         username: req.body.username
     }); 
@@ -60,12 +57,11 @@ const verfyLogin = async (req,res,next)=>{
 
     let result = await bcrypt.compare(req.body.password, user.password);
 
-    console.log(result);
-
     if(result) {
         return next();
     }
 
+    req.flash("fail","Please enter correct email or password");
     return res.redirect("/");
 
 };
@@ -81,6 +77,25 @@ const requireLogin = async (req,res,next)=>{
     res.redirect("/");
 };
 
+const journalAccess = async (req,res,next)=>{
+
+    const { id } = req.params;
+
+    const userProfile = await User.findOne({ username: req.session.username });
+
+    const journal = await Entry.findOne({ _id: id, author: userProfile._id });
+
+    console.log(journal);
+
+    if(journal==null) {
+        req.flash("fail","Cannot access that journal");
+        return res.redirect("/allJournals");
+    }
+
+    
+    next();
+
+};
 
 app.get("/" ,async (req,res)=>{
     
@@ -94,20 +109,28 @@ app.get("/" ,async (req,res)=>{
 
 app.get("/addJournal" ,requireLogin,(req,res)=>{
 
-    console.log(req.headers);
+
 
     res.render("addJournal");
     
 });
 
 app.post("/addJournal", requireLogin ,async (req,res)=>{
-    
-    console.log(req.body);
+
     let daySelected = new Date(req.body.date);
 
     const userProfile = await User.findOne({
         username: req.session.username
     });
+
+    const temp1 = await Entry.findOne({date: new Date(req.body.date), author: userProfile._id});
+
+
+    if(temp1 !== null) {
+        req.flash("fail","Two Entries with same data found!");
+        return res.redirect(`/editJournal/${temp1._id}`);
+    }
+
 
     console.log(userProfile);
 
@@ -118,13 +141,10 @@ app.post("/addJournal", requireLogin ,async (req,res)=>{
         day: daySelected.getDate(),
         month: daySelected.getMonth(),
         year: daySelected.getFullYear(),
+        author: userProfile._id
     });
-    temp.author = userProfile;
 
-    userProfile.entries.push(temp);
-    userProfile.save();
 
-    console.log("corssed");
     
     temp.save()
     .then(()=>{
@@ -136,20 +156,14 @@ app.post("/addJournal", requireLogin ,async (req,res)=>{
 
         console.log(err);
         
-        const temp1 = await Entry.find({date: new Date(req.body.date)});
-        console.log(temp1);
-
-        req.flash("fail","Twp Entries with same data found!");
-        res.redirect(`/editJournal?id=${temp1[0]._id}`)
-                
     })
     
     
 });
 
-app.get("/displayJournal",requireLogin, async (req,res)=>{
+app.get("/displayJournal/:id",requireLogin, journalAccess,async (req,res)=>{
     
-    const { id } = req.query;
+    const { id } = req.params;
     
     const data = await Entry.findById(id);
     console.log(data);
@@ -158,9 +172,9 @@ app.get("/displayJournal",requireLogin, async (req,res)=>{
     
 })
 
-app.get("/editJournal",requireLogin, async (req,res)=>{
+app.get("/editJournal/:id",requireLogin, async (req,res)=>{
     
-    const { id } = req.query;
+    const { id } = req.params;
     let moment = require("moment");
     const data = await Entry.findById(id);
     console.log(data);
@@ -174,22 +188,24 @@ app.get("/editJournal",requireLogin, async (req,res)=>{
     
 })
 
-app.post("/editJournal", requireLogin, async (req,res)=>{
+app.post("/editJournal/:id", requireLogin, async (req,res)=>{
     console.log(req.body);
-    const { id } = req.query;
+    const { id } = req.params;
     const temp = await Entry.updateOne({date: new Date(req.body.date)},{$set : { title: req.body.title, description: req.body.description }},{new:true});
     
-    res.send(`<script>alert('Edited!'); window.location.href='/displayJournal?id=${id}'</script>`);
+    req.flash("success","Edited!");
+    res.redirect(`/displayJournal/${id}`)
     
 });
 
-app.get("/deleteJournal",requireLogin, async(req,res)=>{
+app.get("/deleteJournal/:id",requireLogin, async(req,res)=>{
     
-    const { id } = req.query;
+    const { id } = req.params;
     
     const delete1 = await Entry.findByIdAndDelete(id);
-    
-    res.send("<script>alert('Journal Deleted'); window.location.href='/'</script>")
+
+    req.flash("success","Journal Deleted!");
+    res.redirect("/allJournals");
     
 });
 
@@ -204,7 +220,7 @@ app.post("/login", verfyLogin, async (req,res)=>{
     req.session.username = userProfile.username;
 
     console.log("Idhar hu bhai");
-    req.flash("success","Logged In!");
+    req.flash("success",`Logged In! Welcome Back ${userProfile.name}`);
     res.redirect("/");
 
 });
@@ -227,19 +243,32 @@ app.get("/logout", async(req,res)=>{
 
 app.post("/signup", async (req,res)=>{
 
-    const hashedPwd = await bcrypt.hash(req.body.password, 10);
+    try {
+        
+            const hashedPwd = await bcrypt.hash(req.body.password, 10);
+        
+            const profile = {
+                username: req.body.username,
+                password: hashedPwd,
+                name: req.body.name
+            };
+        
+            let newProfile = new User(profile);
+            await newProfile.save();
+        
+            req.flash("success","Account Created! Now please log in");
+            res.redirect("/");
 
-    const profile = {
-        username: req.body.username,
-        password: hashedPwd,
-        name: req.body.name
-    };
+    } catch (err) {
+        console.log(err);
+        console.log(err.code);
 
-    let newProfile = new User(profile);
-    await newProfile.save();
+        if(err.code===11000) {
+            req.flash("fail","username already exists. Please enter a new username");
+            res.redirect("/");
+        }
 
-    req.flash("success","Account Created! Now please log in");
-    res.redirect("/");
+    }
     
 
 }); 
@@ -251,6 +280,8 @@ app.get("/allJournals",requireLogin, async (req,res)=>{
     let searchQ = req.query.search;
     let { day,month,year } = req.query;
 
+    let userProfile = await User.findOne({ username: req.session.username });
+
     if(searchQ!==undefined)
     {
         console.log("Inside search Q");
@@ -260,13 +291,15 @@ app.get("/allJournals",requireLogin, async (req,res)=>{
                     title: {
                         $regex: `${searchQ}`,
                         $options: "i",
-                    }
+                    },
+                    author: userProfile._id
                 },
                 {
                     description: {
                         $regex: `${searchQ}`,
                         $options: "i",
-                    }
+                    },
+                    author: userProfile._id
                 }
             ]        
         }).sort({date:-1});
@@ -288,12 +321,13 @@ app.get("/allJournals",requireLogin, async (req,res)=>{
             year: {
                 $regex: `${year}`,
                 $options: "i",
-            }
+            },
+            author: userProfile._id
                 
         }).sort({date:-1})
     }
     else {
-        EntryData = await Entry.find({}).sort({date:-1});
+        EntryData = await Entry.find({ author: userProfile._id }).sort({date:-1});
     }
 
 

@@ -14,7 +14,7 @@
 
     <link rel="icon" type="image/x-icon" href="Images/logo.png">
 
-    <link rel="stylesheet" href="StyleSheets/displayJournal.css">
+    <link rel="stylesheet" href="/StyleSheets/displayJournal.css">
 
     <link rel="stylesheet"
         href="https://fonts.sandbox.google.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
@@ -33,7 +33,7 @@
                 <div class="row">
                     <div class="col-12">
                         <h2 class="mb-1">
-                            <%= data.title %> <a href="/editJournal?id=<%= data._id %>"><span class="material-symbols-outlined">edit_note</span></a> <a href="#"><span class="material-symbols-outlined"data-bs-toggle="modal" data-bs-target="#exampleModal">delete</span></a>
+                            <%= data.title %> <a href="/editJournal/<%= data._id %>"><span class="material-symbols-outlined">edit_note</span></a> <a href="#"><span class="material-symbols-outlined"data-bs-toggle="modal" data-bs-target="#exampleModal">delete</span></a>
                         </h2>
                         <p class="fst-italic mt-0 mb-2">
                             <%= data.date.toDateString() %>
@@ -62,7 +62,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" data-bs-dismiss="modal">No</button>
-                        <a href="/deleteJournal?id=<%= data._id %>"><button type="button" class="btn btn-danger">Yes</button></a>
+                        <a href="/deleteJournal/<%= data._id %>"><button type="button" class="btn btn-danger">Yes</button></a>
                     </div>
                 </div>
             </div>
