@@ -11,7 +11,7 @@ const bcrypt = require('bcrypt');
 const session = require("express-session");
 const flash = require('connect-flash');
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 database.connectDatabase()
     .then(()=>{
