@@ -61,7 +61,7 @@ const verfyLogin = async (req,res,next)=>{
         return next();
     }
 
-    req.flash("fail","Please enter correct email or password");
+    req.flash("fail","Please enter correct username and password");
     return res.redirect("/");
 
 };
@@ -88,7 +88,7 @@ const journalAccess = async (req,res,next)=>{
     console.log(journal);
 
     if(journal==null) {
-        req.flash("fail","Cannot access that journal");
+        req.flash("fail","Access denied");
         return res.redirect("/allJournals");
     }
 
@@ -108,8 +108,6 @@ app.get("/" ,async (req,res)=>{
 });
 
 app.get("/addJournal" ,requireLogin,(req,res)=>{
-
-
 
     res.render("addJournal");
     
