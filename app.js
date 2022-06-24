@@ -51,7 +51,7 @@ const verfyLogin = async (req,res,next)=>{
     }); 
 
     if(user==undefined) {
-        req.flash("fail","Please create a user")
+        req.flash("fail","Please enter correct username and password")
         return res.redirect("/");
     }
 
