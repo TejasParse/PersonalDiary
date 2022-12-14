@@ -16,4 +16,4 @@ http://localhost:3000/
 Thank you for using it!  
   
 The website is also hosted at  
-https://personal-private-diary.herokuapp.com/
+https://personal-private-diary.onrender.com/
